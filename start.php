@@ -50,18 +50,26 @@ $package = isset($config["package"]) ? $config["package"] : null;
 $ppk = isset($config["private_key"]) ? $config["private_key"] : null;
 $user = isset($config["user"]) ? $config["user"] : null;
 $destination = isset($config["destination"]) ? $config["destination"] : null;
+$pass = isset($ppk) && !file_exists($ppk) && isset($config["password"]) ? 
+	$config["password"] : null;
 
 if (!isset($user) || !isset($hosts) || !isset($package) 
 		|| !is_dir($package) || !is_array($hosts) || count($hosts) == 0
-			|| !file_exists($ppk) || !isset($destination)) {
+			|| (isset($ppk) && !file_exists($ppk)) || !isset($destination)) {
 	exit("Error ...");
 }
 
 $zipfile = new ZipTool();
 $zipfile->addNewFile($package);
 
-$key = new Crypt_RSA();
-$key->loadKey(file_get_contents($ppk));
+if (isset($ppk) && !file_exists($ppk)) {
+	$key = new Crypt_RSA();
+	$key->loadKey(file_get_contents($ppk));
+} elseif (isset($pass)) {
+	$key = $pass;
+} else {
+	exit("No key found...");
+}
 
 foreach ($hosts as $number => $host) {
 
