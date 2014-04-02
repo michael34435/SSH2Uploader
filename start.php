@@ -1,6 +1,6 @@
 <?php
 
-$arguments = array();
+
 $params = array();
 
 foreach($argv as $k => $arg) {
@@ -62,7 +62,7 @@ if (!isset($user) || !isset($hosts) || !isset($package)
 $zipfile = new ZipTool();
 $zipfile->addNewFile($package);
 
-if (isset($ppk) && !file_exists($ppk)) {
+if (isset($ppk) && file_exists($ppk)) {
 	$key = new Crypt_RSA();
 	$key->loadKey(file_get_contents($ppk));
 } elseif (isset($pass)) {
