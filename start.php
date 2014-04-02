@@ -24,14 +24,19 @@ require_once "ZipTool.php";
 define('NET_SSH2_LOGGING', NET_SSH2_LOG_COMPLEX);
 
 $c_file = getenv("CONFIG");
+$config = null;
 
 if (empty($c_file)) {
 	if (!file_exists("config.json")) {
 		exit("Cannot find config file.");
+	} else {
+		$config = json_decode(file_get_contents("config.json"), true);
 	}
 } else {
 	if (!file_exists("config$c_file.json")) {
 		exit("Cannot find config file.");
+	} else {
+		$config = json_decode(file_get_contents("config$c_file.json"), true);
 	}
 }
 
@@ -43,7 +48,6 @@ if (empty($reset)) {
 $log = getenv("LOG");
 $html = getenv("HTML");
 
-$config = json_decode(file_get_contents("config.json"), true);
 $hosts = isset($config["hosts"]) ? $config["hosts"] : null;
 $port = isset($config["port"]) ? $config["port"] : 22;
 $package = isset($config["package"]) ? $config["package"] : null;
