@@ -104,11 +104,11 @@ foreach ($hosts as $number => $host) {
 	echo "sudo chmod -R g+rwxs $destination,", $sftp->exec("sudo chmod -R g+rwxs $destination"), ",OK", PHP_EOL;
 	echo $sftp->read(), PHP_EOL;
 	if (!empty($log)) {
-		echo "sudo chmod -R 777 $destination/$log,", $sftp->exec("sudo chmod -R 777 $destination/log"), ",OK", PHP_EOL;
+		echo "sudo chmod -R 777 $destination/$log,", $sftp->exec("sudo chmod -R 777 $destination/$log"), ",OK", PHP_EOL;
 		echo $sftp->read(), PHP_EOL;
 	}
 	if (!empty($html)) {
-		echo "sudo chmod -R 777 $destination/$html,", $sftp->exec("sudo chmod -R 777 $destination/tmp/html"), ",OK", PHP_EOL;
+		echo "sudo chmod -R 777 $destination/$html,", $sftp->exec("sudo chmod -R 777 $destination/$html"), ",OK", PHP_EOL;
 		echo $sftp->read(), PHP_EOL;
 	}
 	echo "sudo chown -R $user $destination,", $sftp->exec("sudo chown -R $user $destination"), ",OK", PHP_EOL;
