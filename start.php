@@ -24,6 +24,7 @@ require_once "ZipTool.php";
 define('NET_SSH2_LOGGING', NET_SSH2_LOG_COMPLEX);
 
 $config_file = getenv("CONFIG");
+$su = getenv("SU");
 $config = null;	
 
 foreach (explode(",", $config_file) as $c_key => $c_file) {
@@ -46,8 +47,6 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
 		$reset = "0";
 	}	
 
-	$log = getenv("LOG");
-	$html = getenv("HTML");	
 
 	$hosts = isset($config["hosts"]) ? $config["hosts"] : null;
 	$port = isset($config["port"]) ? $config["port"] : 22;
@@ -110,15 +109,16 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
 		echo $sftp->read(), PHP_EOL;
 		echo "sudo chmod -R g+rwxs $destination,", $sftp->exec("sudo chmod -R g+rwxs $destination"), ",OK", PHP_EOL;
 		echo $sftp->read(), PHP_EOL;
-		if (!empty($log)) {
-			echo "sudo chmod -R 777 $destination/$log,", $sftp->exec("sudo chmod -R 777 $destination/$log"), ",OK", PHP_EOL;
-			echo $sftp->read(), PHP_EOL;
-		}
-		if (!empty($html)) {
-			echo "sudo chmod -R 777 $destination/$html,", $sftp->exec("sudo chmod -R 777 $destination/$html"), ",OK", PHP_EOL;
-			echo $sftp->read(), PHP_EOL;
-		}
+		
 		echo "sudo chown -R $user $destination,", $sftp->exec("sudo chown -R $user $destination"), ",OK", PHP_EOL;
+
+		foreach (explode(",", $su) as $f_key => $f_des) {
+			if (!empty($html)) {
+				echo "sudo chmod -R 777 $destination/$f_des,", $sftp->exec("sudo chmod -R 777 $destination/$f_des"), ",OK", PHP_EOL;
+				echo $sftp->read(), PHP_EOL;
+			}
+		}
+
 		echo $sftp->read(), PHP_EOL;
 		echo "$user@$host finishing...", PHP_EOL;
 		unset($sftp);
