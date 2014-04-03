@@ -100,7 +100,20 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
 		echo "sudo mv -f " . $sftp->pwd() . "/tmp.zip $destination,", $sftp->exec("sudo mv -f " . $sftp->pwd() . "/tmp.zip $destination"), ",OK", PHP_EOL;
 		echo $sftp->read(), PHP_EOL;
 		echo "sudo unzip -o $destination/tmp.zip -d $destination,", $sftp->exec("sudo unzip -o $destination/tmp.zip -d $destination"), ",OK", PHP_EOL;
-		echo $sftp->read(), PHP_EOL;
+		
+		$result = $sftp->read();
+
+		if (preg_match("/unzip: command not found/", $result)) {
+			echo "Cannot find unzip package ... installing", PHP_EOL;
+			echo "sudo yum install -y unzip", $sftp->exec("sudo yum install -y unzip"), "OK", PHP_EOL;
+			echo $sftp->read(), PHP_EOL;
+			echo "sudo unzip -o $destination/tmp.zip -d $destination,", $sftp->exec("sudo unzip -o $destination/tmp.zip -d $destination"), ",OK", PHP_EOL;
+			echo $sftp->read(), PHP_EOL;
+		} else {
+			echo $result, PHP_EOL;
+		}
+
+
 		echo "sudo rm -rf $destination/tmp.zip,", $sftp->exec("sudo rm -rf $destination/tmp.zip"), ",OK", PHP_EOL;
 		echo $sftp->read(), PHP_EOL;
 		echo "sudo usermod -a -G www-data $user,", $sftp->exec("sudo usermod -a -G www-data $user"), ",OK", PHP_EOL;
