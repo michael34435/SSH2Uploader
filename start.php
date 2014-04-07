@@ -54,7 +54,7 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
 	$ppk = isset($config["private_key"]) ? $config["private_key"] : null;
 	$user = isset($config["user"]) ? $config["user"] : null;
 	$destination = isset($config["destination"]) ? $config["destination"] : null;
-	$pass = isset($ppk) && !file_exists($ppk) && isset($config["password"]) ? 
+	$pass = isset($config["password"]) ? 
 		$config["password"] : null;	
 
 	if (!isset($user) || !isset($hosts) || !isset($package) 
@@ -62,6 +62,8 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
 				|| (isset($ppk) && !file_exists($ppk)) || !isset($destination)) {
 		exit("Config File:config$c_file.json Error ...");
 	}	
+
+	$destination = preg_replace("/^~\//", "/home/$user/", $destination);
 
 	$zipfile = new ZipTool();
 	$zipfile->addNewFile($package);	
@@ -72,6 +74,7 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
 	} elseif (isset($pass)) {
 		$key = $pass;
 	} else {
+		var_dump($config);
 		exit("No key found...");
 	}	
 
@@ -105,7 +108,7 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
 
 		if (preg_match("/unzip: command not found/", $result)) {
 			echo "Cannot find unzip package ... installing", PHP_EOL;
-			echo "sudo yum install -y unzip", $sftp->exec("sudo yum install -y unzip"), "OK", PHP_EOL;
+			echo "sudo yum install -y unzip,", $sftp->exec("sudo yum install -y unzip"), ",OK", PHP_EOL;
 			echo $sftp->read(), PHP_EOL;
 			echo "sudo unzip -o $destination/tmp.zip -d $destination,", $sftp->exec("sudo unzip -o $destination/tmp.zip -d $destination"), ",OK", PHP_EOL;
 			echo $sftp->read(), PHP_EOL;
