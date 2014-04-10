@@ -15,13 +15,13 @@ include these options below.
 
 **password**:Password to login ssh2 service.
 
-**hosts(array)**:Upload server list.
+**hosts(array|string)**:Upload server list.
 
 **private_key**:*.ppk file.
 
 **port**:SSH2 server port.
 
-**destination**:Remote folder to upload.
+**destination(array|string)**:Remote folder to upload.
 
 **package**:Local folder to upload
 
