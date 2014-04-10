@@ -35,3 +35,8 @@ SSH2Uploader accepts like:
 
 ***RESET***:This option will delete assigned folder first, then create it as a new one.(value=0,1)
 
+***ALL***:This option can read all config files, program will give priority to handle all config if this ENV param exists.
+
+##USAGGE
+
+php start.php [ENV=value [,ENV1=value1] ...]

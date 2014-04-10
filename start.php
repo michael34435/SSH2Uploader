@@ -24,8 +24,20 @@ require_once "ZipTool.php";
 define('NET_SSH2_LOGGING', NET_SSH2_LOG_COMPLEX);
 
 $config_file = getenv("CONFIG");
+$all = getenv("ALL");
 $su = getenv("SU");
 $config = null; 
+
+if ($all == "1") {
+    $config_file = glob("config*.json");
+    $all_config = array();
+    foreach ($config_file as $key => $value) {
+        if ($value != "config_example.json") {
+            $all_config[] = $value;
+        }
+    }
+    $config_file = implode(",", $all_config);
+}
 
 foreach (explode(",", $config_file) as $c_key => $c_file) {
     if (empty($c_file)) {
