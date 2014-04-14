@@ -26,6 +26,8 @@ define('NET_SSH2_LOGGING', NET_SSH2_LOG_COMPLEX);
 $config_file = getenv("CONFIG");
 $all = getenv("ALL");
 $su = getenv("SU");
+$mode = getenv("MODE");
+$file = getenv("FILE");
 $config = null; 
 
 if ($all == "1") {
@@ -38,6 +40,14 @@ if ($all == "1") {
     }
     $config_file = implode(",", $all_config);
 }
+
+if ($mode == "download") {
+    $download_mode = true;
+} else {
+    $download_mode = false;
+}
+
+
 
 foreach (explode(",", $config_file) as $c_key => $c_file) {
     if (empty($c_file)) {
@@ -75,11 +85,17 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
         $hosts[] = $remote;
     }
 
-    if (!isset($user) || !isset($hosts) || !isset($package) 
-            || !is_dir($package) || !is_array($hosts) || count($hosts) == 0
+    if (!isset($user) || !isset($hosts) || (!isset($package) && !$download_mode)
+            || (!is_dir($package) && !$download_mode) || !is_array($hosts) || count($hosts) == 0
                 || (isset($ppk) && !file_exists($ppk)) || !isset($destination)) {
         exit("Config File:config$c_file.json Error ...");
     }   
+
+    if ($download_mode && empty($file)) {
+        exit("please assign a file...");
+    } else {
+        $file = explode(",", $file);
+    }
 
     if (!is_array($destination)) {
         $path = preg_replace("/^~\//", "/home/$user/", $destination);
@@ -114,53 +130,65 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
             continue;
         }
         $sftp->enablePTY(); 
-        echo "Start uploading tmp file to the server... from (" . $zipfile->getFileName() . ")", PHP_EOL;   
+        if (!$download_mode) {
+            echo "Start uploading tmp file to the server... from (" . $zipfile->getFileName() . ")", PHP_EOL;       
 
-        $sftp->put($sftp->pwd() . "/tmp.zip", realpath($zipfile->getFileName()), NET_SFTP_LOCAL_FILE );
-        echo "Start installing ... ", PHP_EOL;  
-
+            $sftp->put($sftp->pwd() . "/tmp.zip", realpath($zipfile->getFileName()), NET_SFTP_LOCAL_FILE );
+            echo "Start installing ... ", PHP_EOL;  
+        }
         $sftp->enableQuietMode();
 
         foreach ($destination as $destination_key => $destination_value) {
-            if ($reset == "1") {
-                echo "sudo rm -rf $destination_value,", $sftp->exec("sudo rm -rf $destination_value"), ",OK", PHP_EOL;
+            if (!$download_mode) {
+                if ($reset == "1") {
+                    echo "sudo rm -rf $destination_value,", $sftp->exec("sudo rm -rf $destination_value"), ",OK", PHP_EOL;
+                    echo $sftp->read(), PHP_EOL;
+                }
+                echo "sudo mkdir -p $destination_value,", $sftp->exec("sudo mkdir -p $destination_value"), ",OK", PHP_EOL;
                 echo $sftp->read(), PHP_EOL;
-            }
-            echo "sudo mkdir -p $destination_value,", $sftp->exec("sudo mkdir -p $destination_value"), ",OK", PHP_EOL;
-            echo $sftp->read(), PHP_EOL;
-            echo "sudo mv -f " . $sftp->pwd() . "/tmp.zip $destination_value,", $sftp->exec("sudo mv -f " . $sftp->pwd() . "/tmp.zip $destination_value"), ",OK", PHP_EOL;
-            echo $sftp->read(), PHP_EOL;
-            echo "sudo unzip -o $destination_value/tmp.zip -d $destination_value,", $sftp->exec("sudo unzip -o $destination_value/tmp.zip -d $destination_value"), ",OK", PHP_EOL;
-            
-            $result = $sftp->read();    
-
-            if (preg_match("/unzip: command not found/", $result)) {
-                echo "Cannot find unzip package ... installing", PHP_EOL;
-                echo "sudo yum install -y unzip,", $sftp->exec("sudo yum install -y unzip"), ",OK", PHP_EOL;
+                echo "sudo mv -f " . $sftp->pwd() . "/tmp.zip $destination_value,", $sftp->exec("sudo mv -f " . $sftp->pwd() . "/tmp.zip $destination_value"), ",OK", PHP_EOL;
                 echo $sftp->read(), PHP_EOL;
                 echo "sudo unzip -o $destination_value/tmp.zip -d $destination_value,", $sftp->exec("sudo unzip -o $destination_value/tmp.zip -d $destination_value"), ",OK", PHP_EOL;
-                echo $sftp->read(), PHP_EOL;
-            } else {
-                echo $result, PHP_EOL;
-            }   
-    
+                
+                $result = $sftp->read();        
 
-            echo "sudo rm -rf $destination_value/tmp.zip,", $sftp->exec("sudo rm -rf $destination_value/tmp.zip"), ",OK", PHP_EOL;
-            echo $sftp->read(), PHP_EOL;
-            echo "sudo usermod -a -G www-data $user,", $sftp->exec("sudo usermod -a -G www-data $user"), ",OK", PHP_EOL;
-            echo $sftp->read(), PHP_EOL;
-            echo "sudo chgrp -R www-data $destination_value,", $sftp->exec("sudo chgrp -R www-data $destination_value"), ",OK", PHP_EOL;
-            echo $sftp->read(), PHP_EOL;
-            echo "sudo chmod -R g+rwxs $destination_value,", $sftp->exec("sudo chmod -R g+rwxs $destination_value"), ",OK", PHP_EOL;
-            echo $sftp->read(), PHP_EOL;
-            
-            echo "sudo chown -R $user $destination_value,", $sftp->exec("sudo chown -R $user $destination_value"), ",OK", PHP_EOL;
-            echo $sftp->read(), PHP_EOL;    
-
-            foreach (explode(",", $su) as $f_key => $f_des) {
-                if (!empty($f_des)) {
-                    echo "sudo chmod -R 777 $destination_value/$f_des,", $sftp->exec("sudo chmod -R 777 $destination_value/$f_des"), ",OK", PHP_EOL;
+                if (preg_match("/unzip: command not found/", $result)) {
+                    echo "Cannot find unzip package ... installing", PHP_EOL;
+                    echo "sudo yum install -y unzip,", $sftp->exec("sudo yum install -y unzip"), ",OK", PHP_EOL;
                     echo $sftp->read(), PHP_EOL;
+                    echo "sudo unzip -o $destination_value/tmp.zip -d $destination_value,", $sftp->exec("sudo unzip -o $destination_value/tmp.zip -d $destination_value"), ",OK", PHP_EOL;
+                    echo $sftp->read(), PHP_EOL;
+                } else {
+                    echo $result, PHP_EOL;
+                }   
+            
+
+                echo "sudo rm -rf $destination_value/tmp.zip,", $sftp->exec("sudo rm -rf $destination_value/tmp.zip"), ",OK", PHP_EOL;
+                echo $sftp->read(), PHP_EOL;
+                echo "sudo usermod -a -G www-data $user,", $sftp->exec("sudo usermod -a -G www-data $user"), ",OK", PHP_EOL;
+                echo $sftp->read(), PHP_EOL;
+                echo "sudo chgrp -R www-data $destination_value,", $sftp->exec("sudo chgrp -R www-data $destination_value"), ",OK", PHP_EOL;
+                echo $sftp->read(), PHP_EOL;
+                echo "sudo chmod -R g+rwxs $destination_value,", $sftp->exec("sudo chmod -R g+rwxs $destination_value"), ",OK", PHP_EOL;
+                echo $sftp->read(), PHP_EOL;
+                
+                echo "sudo chown -R $user $destination_value,", $sftp->exec("sudo chown -R $user $destination_value"), ",OK", PHP_EOL;
+                echo $sftp->read(), PHP_EOL;        
+
+                foreach (explode(",", $su) as $f_key => $f_des) {
+                    if (!empty($f_des)) {
+                        echo "sudo chmod -R 777 $destination_value/$f_des,", $sftp->exec("sudo chmod -R 777 $destination_value/$f_des"), ",OK", PHP_EOL;
+                        echo $sftp->read(), PHP_EOL;
+                    }
+                }
+            } else {
+                echo "Start downloading from server ...$user@$host", PHP_EOL;
+                foreach ($file as $file_key => $file_value) {
+                    $file_value_copy = preg_replace("/" . dirname($file_value) . "/", "", $file_value);
+                    if (!is_dir("down/$host")) {
+                        mkdir("down/$host/", "0777", true);
+                    }
+                    file_put_contents("down/$host/$file_value_copy", $sftp->get("$destination_value/$file_value"));
                 }
             }
         }

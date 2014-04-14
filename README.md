@@ -37,6 +37,10 @@ SSH2Uploader accepts like:
 
 ***ALL***:This option can read all config files, program will give priority to handle all config if this ENV param exists.
 
+***MODE***:Change mode to 'dowload'.
+
+***FILE***:Required when download mode is switch on.
+
 ##USAGGE
 
 php start.php [ENV=value [,ENV1=value1] ...]
