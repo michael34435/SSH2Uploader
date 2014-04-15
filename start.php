@@ -1,5 +1,14 @@
 <?php
 
+// initial ...
+if (!is_dir("tmp")) {
+    mkdir("tmp");
+}
+
+if (!is_dir("down")) {
+    mkdir("down");
+}
+
 
 $params = array();
 
