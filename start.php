@@ -155,7 +155,7 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
                 }
                 echo "sudo mkdir -p $destination_value,", $sftp->exec("sudo mkdir -p $destination_value"), ",OK", PHP_EOL;
                 echo $sftp->read(), PHP_EOL;
-                echo "sudo mv -f " . $sftp->pwd() . "/tmp.zip $destination_value,", $sftp->exec("sudo mv -f " . $sftp->pwd() . "/tmp.zip $destination_value"), ",OK", PHP_EOL;
+                echo "sudo cp -f " . $sftp->pwd() . "/tmp.zip $destination_value,", $sftp->exec("sudo cp -f " . $sftp->pwd() . "/tmp.zip $destination_value"), ",OK", PHP_EOL;
                 echo $sftp->read(), PHP_EOL;
                 echo "sudo unzip -o $destination_value/tmp.zip -d $destination_value,", $sftp->exec("sudo unzip -o $destination_value/tmp.zip -d $destination_value"), ",OK", PHP_EOL;
                 
@@ -202,7 +202,9 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
             }
         }
 
-
+        echo "sudo rm -rf " . $sftp->pwd() . "/tmp.zip,", $sftp->exec("sudo rm -rf " . $sftp->pwd() . "/tmp.zip"), ",OK", PHP_EOL;
+        echo $sftp->read(), PHP_EOL;
+        
         echo "$user@$host finishing...", PHP_EOL;
         unset($sftp);
     }
