@@ -1,9 +1,0 @@
-{
-	"user": "example",
-	"private_key": "C:\\private.ppk",
-	"hosts": ["192.168.0.1"],
-	"port" : 22,
-	"destination": "/var/www/html/example.com/trunk",
-	"package": "C:\\example-site",
-	"password": "abcd1234"
-}

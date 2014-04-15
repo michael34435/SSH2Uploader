@@ -31,10 +31,10 @@ $file = getenv("FILE");
 $config = null; 
 
 if ($all == "1") {
-    $config_file = glob("config*.json");
+    $config_file = glob("config\config*.json");
     $all_config = array();
     foreach ($config_file as $key => $value) {
-        if ($value != "config_example.json") {
+        if ($value != "config\config_example.json") {
             $all_config[] = $value;
         }
     }
@@ -51,16 +51,16 @@ if ($mode == "download") {
 
 foreach (explode(",", $config_file) as $c_key => $c_file) {
     if (empty($c_file)) {
-        if (!file_exists("config.json")) {
+        if (!file_exists("config\config.json")) {
             exit("Cannot find config file.");
         } else {
-            $config = json_decode(file_get_contents("config.json"), true);
+            $config = json_decode(file_get_contents("config\config.json"), true);
         }
     } else {
-        if (!file_exists("config$c_file.json")) {
+        if (!file_exists("config\config$c_file.json")) {
             exit("Cannot find config file.");
         } else {
-            $config = json_decode(file_get_contents("config$c_file.json"), true);
+            $config = json_decode(file_get_contents("config\config$c_file.json"), true);
         }
     }   
 

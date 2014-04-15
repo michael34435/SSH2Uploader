@@ -35,12 +35,42 @@ SSH2Uploader accepts like:
 
 ***RESET***:This option will delete assigned folder first, then create it as a new one.(value=0,1)
 
-***ALL***:This option can read all config files, program will give priority to handle all config if this ENV param exists.
+***ALL***:This option can read all config files, program will give priority to handle all config if this ENV param exists(value=0,1).
 
-***MODE***:Change mode to 'dowload'.
+***MODE***:Change mode to 'dowload'(value='download').
 
 ***FILE***:Required when download mode is switch on.
 
 ##USAGGE
 
 php start.php [ENV=value [,ENV1=value1] ...]
+
+##STRUCTURE
+
+|-Crypt
+
+|-File
+
+|-Math
+
+|-Net
+
+|-System
+
+|-config
+
+>|-config1.json
+
+>|-config2.json
+
+|-tmp
+
+>|-tmp.zip
+
+|-down
+
+>|-XXX.XXX.XXX.XXX(host)
+
+>>|-(file)
+
+start.php(main)
