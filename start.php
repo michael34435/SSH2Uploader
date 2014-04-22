@@ -159,6 +159,7 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
 
     foreach ($hosts as $number => $host) {  
         if (!isset($remote)) {
+            $prefix = "";
             echo "Start connecting sftp service...$user@$host", PHP_EOL;
             $sftp = new Net_SFTP($host);
             if (!$sftp->login($user, $key)) {
@@ -218,8 +219,7 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
                 echo $sftp->read(), PHP_EOL;
                 echo $prefix . "sudo chmod -R g+rwxs $destination_value,", $sftp->exec($prefix . "sudo chmod -R g+rwxs $destination_value"), ",OK", PHP_EOL;
                 echo $sftp->read(), PHP_EOL;
-                
-                echo $prefix . "sudo chown -R $user $destination_value,", $sftp->exec($prefix . "sudo chown -R $user $destination_value"), ",OK", PHP_EOL;
+                echo $prefix . "sudo chown -R www-data $destination_value,", $sftp->exec($prefix . "sudo chown -R www-data $destination_value"), ",OK", PHP_EOL;
                 echo $sftp->read(), PHP_EOL;        
 
                 foreach (explode(",", $su) as $f_key => $f_des) {
