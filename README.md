@@ -43,7 +43,7 @@ SSH2Uploader accepts like:
 
 ***FILE***:Required when download mode is switch on.
 
-##USAGGE
+##USAGE
 
 	php start.php [ENV=value [,ENV1=value1] ...]
 
