@@ -25,6 +25,8 @@ include these options below.
 
 **package**:Local folder to upload
 
+**remote**:SSH2 Proxy.
+
 ##ENV params
 
 SSH2Uploader accepts like:
@@ -43,7 +45,7 @@ SSH2Uploader accepts like:
 
 ##USAGGE
 
-php start.php [ENV=value [,ENV1=value1] ...]
+	php start.php [ENV=value [,ENV1=value1] ...]
 
 ##STRUCTURE
 
