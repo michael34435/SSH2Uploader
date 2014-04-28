@@ -42,17 +42,20 @@ class ZipTool
         if(strtolower($mode) == "batch") {
             $files = explode('|', $src);
             foreach ($files as $key => $value) {
-                $this->zip->addFile($value, preg_replace("/\\\/", "/", preg_split('/(\\\|\/)/', $value)[count(preg_split('/(\\\|\/)/', $value))-1]));
+                $split = preg_split('/(\\\|\/)/', $value);
+                $this->zip->addFile($value, preg_replace("/\\\/", "/", $split[count(preg_split('/(\\\|\/)/', $value))-1]));
             }
         } elseif(strtolower($mode) == "folder") {
             if(is_dir($src)) {
                 $this->dirName = $src;
                 $files = glob($src . '/*');
                 foreach ($files as $key => $value) {
-                    if(!is_dir($value))
-                        $this->zip->addFile($value, preg_replace("/\\\/", "/", preg_split('/(\\\|\/)/', $value)[count(preg_split('/(\\\|\/)/', $value))-1]));
-                    else
+                    if(!is_dir($value)) {
+                        $split = preg_split('/(\\\|\/)/', $value);
+                        $this->zip->addFile($value, preg_replace("/\\\/", "/", $split[count(preg_split('/(\\\|\/)/', $value))-1]));
+                    } else {
                         $this->addFolder($value);
+                    }
                 }
             } else {
                 exit;
@@ -84,10 +87,12 @@ class ZipTool
             $this->zip->addEmptyDir($dir);  
 
             foreach ($files as $key => $value) {
-                if(!is_dir($value))
-                    $this->zip->addFile($value, preg_replace("/\\\/", "/", $dir . '\\' . preg_split('/(\\\|\/)/', $value)[count(preg_split('/(\\\|\/)/', $value))-1]));
-                else
+                if(!is_dir($value)) {
+                    $split = preg_split('/(\\\|\/)/', $value);
+                    $this->zip->addFile($value, preg_replace("/\\\/", "/", $dir . '\\' . $split[count(preg_split('/(\\\|\/)/', $value))-1]));
+                } else {
                     $this->addFolder($value);
+                }
             }
         }
     }

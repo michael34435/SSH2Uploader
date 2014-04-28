@@ -147,7 +147,8 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
             $sftp->put("/home/$user/tmp.zip", realpath($zipfile->getFileName()), NET_SFTP_LOCAL_FILE );
             echo "Start installing ... uploading to all server ...", PHP_EOL;  
             foreach ($hosts as $value) {
-                echo $prefix . "sudo scp /home/$user/tmp.zip $value:/home/" . explode("@", $value)[0] . ",", $sftp->exec($prefix . "sudo scp /home/$user/tmp.zip $value:/home/" . explode("@", $value)[0]), ",OK", PHP_EOL;
+                $split = explode("@", $value);
+                echo $prefix . "sudo scp /home/$user/tmp.zip $value:/home/" . $split[0] . ",", $sftp->exec($prefix . "sudo scp /home/$user/tmp.zip $value:/home/" . $split[0]), ",OK", PHP_EOL;
                 $sftp->read();
             }
             echo $prefix . "sudo rm -rf /home/$user/tmp.zip,", $sftp->exec($prefix . "sudo rm -rf /home/$user/tmp.zip"), ",OK", PHP_EOL;
@@ -179,8 +180,9 @@ foreach (explode(",", $config_file) as $c_key => $c_file) {
         } else {
             echo "Enter another server ... $host", PHP_EOL;
             $prefix = "ssh -t $host ";
-            $user = explode("@", $host)[0];
-            $host = explode("@", $host)[1];
+            $split = explode("@", $host);
+            $user = $split[0];
+            $host = $split[1];
         }
         
         $sftp->enableQuietMode();
