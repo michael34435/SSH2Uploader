@@ -1,5 +1,7 @@
 <?php
 
+ini_set('memory_limit','2048M');
+
 /**
 * For zip files using Zip funcs
 */

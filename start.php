@@ -1,5 +1,7 @@
 <?php
 
+ini_set('memory_limit','2048M');
+
 // initial ...
 if (!is_dir("tmp")) {
     mkdir("tmp");
